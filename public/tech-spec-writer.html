@@ -355,7 +355,7 @@
 
             // 3. Canvas 생성
             const canvas = await html2canvas(previewElement, {
-                scale: 3, // 3은 용량이 너무 커질 수 있어 2로 조정
+                scale: 1.5, // 3은 용량이 너무 커질 수 있어 2로 조정
                 useCORS: true,
                 logging: false,
                 backgroundColor: "#ffffff"
@@ -364,21 +364,21 @@
             // 4. PDF 저장 로직
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF('p', 'mm', 'a4');
-            const imgData = canvas.toDataURL('image/png');
-            const imgWidth = 190; // 좌우 여백 고려
-            const pageHeight = 280;
+            const imgData = canvas.toDataURL('image/jpeg', 1.0);
+            const imgWidth = 210; // 좌우 여백 고려
+            const pageHeight = 297;
             const imgHeight = (canvas.height * imgWidth) / canvas.width;
 
             let heightLeft = imgHeight;
             let position = 10;
 
-            doc.addImage(imgData, 'PNG', 10, position, imgWidth, imgHeight);
+            doc.addImage(imgData, 'JPEG', 10, position, imgWidth, imgHeight, undefined, 'FAST');
             heightLeft -= pageHeight;
 
             while (heightLeft >= 0) {
                 position = heightLeft - imgHeight + 10;
                 doc.addPage();
-                doc.addImage(imgData, 'PNG', 10, position, imgWidth, imgHeight);
+                doc.addImage(imgData, 'JPEG', 10, position, imgWidth, imgHeight, undefined, 'FAST');
                 heightLeft -= pageHeight;
             }
 
