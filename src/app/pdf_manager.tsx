@@ -1,5 +1,5 @@
 import React, { useState, useEffect, createContext, useContext, ReactNode } from 'react';
-import { FileText, Upload, Search, Trash2, Tag, Calendar, File, Hash, FolderOpen, Link, ExternalLink } from 'lucide-react';
+import { FileText, Upload, Search, Trash2, Tag, Calendar, File, Hash, FolderOpen, Link, ExternalLink, Eye } from 'lucide-react';
 import { createFileRoute } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/pdf_manager")({
@@ -62,6 +62,8 @@ abstract class StorageStrategy {
     abstract loadDocuments(): Promise<StorageResult<Document[]>>;
     abstract uploadFile(file: File): Promise<StorageResult<FileUploadResult>>;
     abstract deleteFile(documentId: number): Promise<StorageResult>;
+    // [추가] 파일 열기 메서드 정의
+    abstract openFile(document: Document): Promise<StorageResult>;
 }
 
 // ==================== Browser Storage Strategy ====================
@@ -101,6 +103,14 @@ class BrowserStorageStrategy extends StorageStrategy {
     }
 
     async deleteFile(documentId: number): Promise<StorageResult> {
+        return { success: true };
+    }
+
+    // [추가] 브라우저 전략 구현
+    async openFile(document: Document): Promise<StorageResult> {
+        // 실제 파일 시스템이 아니므로 데모 메시지 출력 또는 Blob URL 처리
+        console.log(`Opening file: ${document.name}`);
+        alert(`브라우저 스토리지 데모: ${document.name} 파일을 엽니다.\n(실제 파일은 서버나 로컬에 저장되지 않았습니다)`);
         return { success: true };
     }
 }
@@ -177,6 +187,27 @@ class SupabaseStorageStrategy extends StorageStrategy {
             return { success: false, error };
         }
     }
+
+    // [추가] Supabase 전략 구현
+    async openFile(document: Document): Promise<StorageResult> {
+        try {
+            // storagePath가 있다고 가정 (uploadFile에서 저장됨)
+            if (!document.storagePath) throw new Error("파일 경로가 없습니다.");
+
+            const { data } = this.client.storage
+                .from('pdf-files') // 버킷 이름
+                .getPublicUrl(document.storagePath);
+
+            if (!data.publicUrl) throw new Error("URL을 생성할 수 없습니다.");
+
+            // 새 탭에서 열기
+            window.open(data.publicUrl, '_blank');
+            return { success: true };
+        } catch (error) {
+            console.error('File open error:', error);
+            return { success: false, error };
+        }
+    }
 }
 
 // ==================== Local File System Strategy ====================
@@ -206,25 +237,97 @@ class LocalFileSystemStrategy extends StorageStrategy {
         }
     }
 
+    // [수정] 파일 업로드: 실제로 Electron을 통해 디스크에 저장
     async uploadFile(file: File): Promise<StorageResult<FileUploadResult>> {
         try {
+            // 1. 파일 데이터를 ArrayBuffer로 변환
+            const arrayBuffer = await file.arrayBuffer();
+
+            // 2. Electron Main Process로 데이터 전송 및 저장 요청
+            // (preload.js에 saveFile이 정의되어 있어야 함)
+            const result = await (window as any).api.saveFile(file.name, arrayBuffer);
+
+            if (!result.success) {
+                throw new Error(result.error || '파일 저장 실패');
+            }
+
+            // 3. Main Process가 반환한 "절대 경로"를 사용
             return {
                 success: true,
                 data: {
                     name: file.name,
                     size: file.size,
                     type: file.type,
-                    localPath: `./files/${Date.now()}-${file.name}`
+                    // 중요: 여기에 절대 경로가 저장됩니다 (예: C:\Users\...\pdf-files\1234.pdf)
+                    storagePath: result.path
                 }
             };
         } catch (error) {
+            console.error(error);
             return { success: false, error };
         }
     }
 
+    // [수정] 파일 삭제: 실제 파일 삭제 + 메타데이터 삭제
     async deleteFile(documentId: number): Promise<StorageResult> {
         try {
+            // 1. 현재 저장된 문서 목록을 불러와서 삭제 대상 찾기
+            const loadResult = await this.loadDocuments();
+            const documents = loadResult.data || [];
+            const targetDoc = documents.find(doc => doc.id === documentId);
+
+            // 2. 실제 파일 삭제 (Electron IPC 호출)
+            // targetDoc이 있고, 경로 정보(storagePath)가 있다면 실제 파일 삭제 시도
+            if (targetDoc && targetDoc.storagePath) {
+                const electronAPI = (window as any).api;
+
+                if (electronAPI && electronAPI.deleteFile) {
+                    const deleteResult = await electronAPI.deleteFile(targetDoc.storagePath);
+
+                    if (!deleteResult.success) {
+                        console.warn(`실제 파일 삭제 실패 (${targetDoc.storagePath}):`, deleteResult.error);
+                        // 실제 파일 삭제에 실패해도, 목록에서는 지울지 여부를 결정해야 합니다.
+                        // 여기서는 경고만 하고 목록 삭제를 진행합니다.
+                    }
+                }
+            }
+
+            // 3. 메타데이터(목록)에서 삭제 및 저장
+            // 기존 로직과 동일하게 필터링 후 localStorage 업데이트
+            const updatedDocs = documents.filter(doc => doc.id !== documentId);
+            localStorage.setItem('pdf-documents-local', JSON.stringify(updatedDocs));
+
             return { success: true };
+
+        } catch (error) {
+            console.error('Delete operation failed:', error);
+            return { success: false, error };
+        }
+    }
+
+    // [수정] 파일 열기: 저장된 절대 경로로 열기 요청
+    async openFile(document: Document): Promise<StorageResult> {
+        try {
+            const electronAPI = (window as any).api;
+
+            // storagePath(절대 경로)가 있는지 확인
+            // 하위 호환성을 위해 localPath도 체크하지만, 새로 저장된 건 storagePath를 사용
+            const pathOpen = document.storagePath || (document as any).localPath;
+
+            if (!pathOpen) {
+                throw new Error("파일 경로를 찾을 수 없습니다.");
+            }
+
+            if (electronAPI && electronAPI.openPath) {
+                // Electron에게 절대 경로로 열기 요청
+                const errorMsg = await electronAPI.openPath(pathOpen);
+
+                if (errorMsg) throw new Error(`파일 열기 실패: ${errorMsg}`);
+                return { success: true };
+            } else {
+                alert(`Electron 환경이 아닙니다.\n경로: ${pathOpen}`);
+                return { success: true };
+            }
         } catch (error) {
             return { success: false, error };
         }
@@ -239,6 +342,8 @@ interface StorageContextType {
     loadDocuments: () => Promise<StorageResult<Document[]>>;
     uploadFile: (file: File) => Promise<StorageResult<FileUploadResult>>;
     deleteFile: (docId: number) => Promise<StorageResult>;
+    // [추가]
+    openFile: (doc: Document) => Promise<StorageResult>;
 }
 
 const StorageContext = createContext<StorageContextType | null>(null);
@@ -270,7 +375,9 @@ export const StorageProvider: React.FC<StorageProviderProps> = ({ children, stra
         saveDocuments: (docs) => currentStrategy.saveDocuments(docs),
         loadDocuments: () => currentStrategy.loadDocuments(),
         uploadFile: (file) => currentStrategy.uploadFile(file),
-        deleteFile: (docId) => currentStrategy.deleteFile(docId)
+        deleteFile: (docId) => currentStrategy.deleteFile(docId),
+        // [추가]
+        openFile: (doc) => currentStrategy.openFile(doc)
     };
 
     return (
@@ -345,8 +452,15 @@ const PDFManagerApp: React.FC = () => {
 
     const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>): void => {
         const files = Array.from(e.target.files || []);
+
+        // 파일이 선택되지 않았을 경우(취소 등) 처리
+        if (files.length === 0) return;
+
         setUploadFiles(files);
         setShowUploadModal(true);
+
+        // [핵심 수정] 입력 값을 초기화하여 동일한 파일을 다시 선택해도 onChange가 트리거되도록 함
+        e.target.value = '';
     };
 
     const confirmUpload = async (): Promise<void> => {
@@ -441,6 +555,19 @@ const PDFManagerApp: React.FC = () => {
         const doc = documents.find(d => d.id === id);
         if (doc) {
             updateDocument(id, { links: (doc.links || []).filter(l => l.id !== linkId) });
+        }
+    };
+
+    // [추가] 파일 열기 핸들러
+    const handleOpenFile = async (e: React.MouseEvent, doc: Document) => {
+        e.stopPropagation(); // 카드 클릭 이벤트(상세보기) 방지
+        setIsLoading(true);
+        const result = await storage.openFile(doc);
+        setIsLoading(false);
+
+        if (!result.success) {
+            console.error(result.error);
+            alert('파일을 열 수 없습니다. 파일 경로가 유효하지 않거나 삭제되었을 수 있습니다.');
         }
     };
 
@@ -723,6 +850,15 @@ const PDFManagerApp: React.FC = () => {
                                                         </div>
                                                     )}
                                                 </div>
+
+                                                {/* 파일 열기 버튼 추가 */}
+                                                <button
+                                                    onClick={(e) => handleOpenFile(e, doc)}
+                                                    className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded transition-colors"
+                                                    title="PDF 파일 열기"
+                                                >
+                                                    <Eye className="w-4 h-4" />
+                                                </button>
 
                                                 <button
                                                     onClick={(e) => {

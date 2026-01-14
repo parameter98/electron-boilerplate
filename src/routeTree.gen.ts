@@ -11,21 +11,21 @@
 // Import Routes
 
 import { Route as rootRoute } from './app/__root'
+import { Route as TechSpecImport } from './app/tech-spec'
 import { Route as PdfmanagerImport } from './app/pdf_manager'
-import { Route as AboutImport } from './app/about'
 import { Route as IndexImport } from './app/index'
 
 // Create/Update Routes
 
-const PdfmanagerRoute = PdfmanagerImport.update({
-  id: '/pdf_manager',
-  path: '/pdf_manager',
+const TechSpecRoute = TechSpecImport.update({
+  id: '/tech-spec',
+  path: '/tech-spec',
   getParentRoute: () => rootRoute,
 } as any)
 
-const AboutRoute = AboutImport.update({
-  id: '/about',
-  path: '/about',
+const PdfmanagerRoute = PdfmanagerImport.update({
+  id: '/pdf_manager',
+  path: '/pdf_manager',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -46,18 +46,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexImport
       parentRoute: typeof rootRoute
     }
-    '/about': {
-      id: '/about'
-      path: '/about'
-      fullPath: '/about'
-      preLoaderRoute: typeof AboutImport
-      parentRoute: typeof rootRoute
-    }
     '/pdf_manager': {
       id: '/pdf_manager'
       path: '/pdf_manager'
       fullPath: '/pdf_manager'
       preLoaderRoute: typeof PdfmanagerImport
+      parentRoute: typeof rootRoute
+    }
+    '/tech-spec': {
+      id: '/tech-spec'
+      path: '/tech-spec'
+      fullPath: '/tech-spec'
+      preLoaderRoute: typeof TechSpecImport
       parentRoute: typeof rootRoute
     }
   }
@@ -67,42 +67,42 @@ declare module '@tanstack/react-router' {
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/about': typeof AboutRoute
   '/pdf_manager': typeof PdfmanagerRoute
+  '/tech-spec': typeof TechSpecRoute
 }
 
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/about': typeof AboutRoute
   '/pdf_manager': typeof PdfmanagerRoute
+  '/tech-spec': typeof TechSpecRoute
 }
 
 export interface FileRoutesById {
   __root__: typeof rootRoute
   '/': typeof IndexRoute
-  '/about': typeof AboutRoute
   '/pdf_manager': typeof PdfmanagerRoute
+  '/tech-spec': typeof TechSpecRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/about' | '/pdf_manager'
+  fullPaths: '/' | '/pdf_manager' | '/tech-spec'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/about' | '/pdf_manager'
-  id: '__root__' | '/' | '/about' | '/pdf_manager'
+  to: '/' | '/pdf_manager' | '/tech-spec'
+  id: '__root__' | '/' | '/pdf_manager' | '/tech-spec'
   fileRoutesById: FileRoutesById
 }
 
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  AboutRoute: typeof AboutRoute
   PdfmanagerRoute: typeof PdfmanagerRoute
+  TechSpecRoute: typeof TechSpecRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  AboutRoute: AboutRoute,
   PdfmanagerRoute: PdfmanagerRoute,
+  TechSpecRoute: TechSpecRoute,
 }
 
 export const routeTree = rootRoute
@@ -116,18 +116,18 @@ export const routeTree = rootRoute
       "filePath": "__root.tsx",
       "children": [
         "/",
-        "/about",
-        "/pdf_manager"
+        "/pdf_manager",
+        "/tech-spec"
       ]
     },
     "/": {
       "filePath": "index.tsx"
     },
-    "/about": {
-      "filePath": "about.tsx"
-    },
     "/pdf_manager": {
       "filePath": "pdf_manager.tsx"
+    },
+    "/tech-spec": {
+      "filePath": "tech-spec.tsx"
     }
   }
 }
