@@ -1,6 +1,7 @@
 import React, { useState, useEffect, createContext, useContext, ReactNode } from 'react';
 import { FileText, Upload, Search, Trash2, Tag, Calendar, File, Hash, FolderOpen, Link, ExternalLink, Eye } from 'lucide-react';
 import { createFileRoute } from "@tanstack/react-router";
+import { toast, Toaster } from 'sonner';
 
 export const Route = createFileRoute("/pdf_manager")({
     component: PDFManagerAppShell,
@@ -110,7 +111,7 @@ class BrowserStorageStrategy extends StorageStrategy {
     async openFile(document: Document): Promise<StorageResult> {
         // 실제 파일 시스템이 아니므로 데모 메시지 출력 또는 Blob URL 처리
         console.log(`Opening file: ${document.name}`);
-        alert(`브라우저 스토리지 데모: ${document.name} 파일을 엽니다.\n(실제 파일은 서버나 로컬에 저장되지 않았습니다)`);
+        toast.info(`브라우저 스토리지 데모: ${document.name} 파일을 엽니다.\n(실제 파일은 서버나 로컬에 저장되지 않았습니다)`);
         return { success: true };
     }
 }
@@ -325,7 +326,7 @@ class LocalFileSystemStrategy extends StorageStrategy {
                 if (errorMsg) throw new Error(`파일 열기 실패: ${errorMsg}`);
                 return { success: true };
             } else {
-                alert(`Electron 환경이 아닙니다.\n경로: ${pathOpen}`);
+                toast.error(`Electron 환경이 아닙니다.\n경로: ${pathOpen}`);
                 return { success: true };
             }
         } catch (error) {
@@ -431,7 +432,7 @@ const PDFManagerApp: React.FC = () => {
     const saveDocuments = async (docs: Document[]): Promise<void> => {
         const result = await storage.saveDocuments(docs);
         if (!result.success) {
-            alert('문서 저장에 실패했습니다.');
+            toast.error('문서 저장에 실패했습니다.');
         }
     };
 
@@ -567,7 +568,7 @@ const PDFManagerApp: React.FC = () => {
 
         if (!result.success) {
             console.error(result.error);
-            alert('파일을 열 수 없습니다. 파일 경로가 유효하지 않거나 삭제되었을 수 있습니다.');
+            toast.error('파일을 열 수 없습니다. 파일 경로가 유효하지 않거나 삭제되었을 수 있습니다.');
         }
     };
 
@@ -616,6 +617,7 @@ const PDFManagerApp: React.FC = () => {
 
     return (
         <div className="min-h-screen bg-gray-50">
+            <Toaster richColors />
             {/* Loading Overlay */}
             {isLoading && (
                 <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50">

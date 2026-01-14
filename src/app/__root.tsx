@@ -6,7 +6,7 @@ export const Route = createRootRoute({
   component: () => (
     <>
       <Navbar />
-      <div className="pt-4 h-screen">
+      <div className="pt-12 h-screen">
         <Outlet />
       </div>
       <Footer />
