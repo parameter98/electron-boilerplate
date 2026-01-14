@@ -11,11 +11,19 @@
 // Import Routes
 
 import { Route as rootRoute } from './app/__root'
+import { Route as TechspecWriterImport } from './app/techspec-writer'
 import { Route as TechSpecImport } from './app/tech-spec'
 import { Route as PdfmanagerImport } from './app/pdf_manager'
+import { Route as GamedevLogImport } from './app/gamedev-log'
 import { Route as IndexImport } from './app/index'
 
 // Create/Update Routes
+
+const TechspecWriterRoute = TechspecWriterImport.update({
+  id: '/techspec-writer',
+  path: '/techspec-writer',
+  getParentRoute: () => rootRoute,
+} as any)
 
 const TechSpecRoute = TechSpecImport.update({
   id: '/tech-spec',
@@ -26,6 +34,12 @@ const TechSpecRoute = TechSpecImport.update({
 const PdfmanagerRoute = PdfmanagerImport.update({
   id: '/pdf_manager',
   path: '/pdf_manager',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const GamedevLogRoute = GamedevLogImport.update({
+  id: '/gamedev-log',
+  path: '/gamedev-log',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -46,6 +60,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexImport
       parentRoute: typeof rootRoute
     }
+    '/gamedev-log': {
+      id: '/gamedev-log'
+      path: '/gamedev-log'
+      fullPath: '/gamedev-log'
+      preLoaderRoute: typeof GamedevLogImport
+      parentRoute: typeof rootRoute
+    }
     '/pdf_manager': {
       id: '/pdf_manager'
       path: '/pdf_manager'
@@ -60,6 +81,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TechSpecImport
       parentRoute: typeof rootRoute
     }
+    '/techspec-writer': {
+      id: '/techspec-writer'
+      path: '/techspec-writer'
+      fullPath: '/techspec-writer'
+      preLoaderRoute: typeof TechspecWriterImport
+      parentRoute: typeof rootRoute
+    }
   }
 }
 
@@ -67,42 +95,63 @@ declare module '@tanstack/react-router' {
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/gamedev-log': typeof GamedevLogRoute
   '/pdf_manager': typeof PdfmanagerRoute
   '/tech-spec': typeof TechSpecRoute
+  '/techspec-writer': typeof TechspecWriterRoute
 }
 
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/gamedev-log': typeof GamedevLogRoute
   '/pdf_manager': typeof PdfmanagerRoute
   '/tech-spec': typeof TechSpecRoute
+  '/techspec-writer': typeof TechspecWriterRoute
 }
 
 export interface FileRoutesById {
   __root__: typeof rootRoute
   '/': typeof IndexRoute
+  '/gamedev-log': typeof GamedevLogRoute
   '/pdf_manager': typeof PdfmanagerRoute
   '/tech-spec': typeof TechSpecRoute
+  '/techspec-writer': typeof TechspecWriterRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/pdf_manager' | '/tech-spec'
+  fullPaths:
+    | '/'
+    | '/gamedev-log'
+    | '/pdf_manager'
+    | '/tech-spec'
+    | '/techspec-writer'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/pdf_manager' | '/tech-spec'
-  id: '__root__' | '/' | '/pdf_manager' | '/tech-spec'
+  to: '/' | '/gamedev-log' | '/pdf_manager' | '/tech-spec' | '/techspec-writer'
+  id:
+    | '__root__'
+    | '/'
+    | '/gamedev-log'
+    | '/pdf_manager'
+    | '/tech-spec'
+    | '/techspec-writer'
   fileRoutesById: FileRoutesById
 }
 
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  GamedevLogRoute: typeof GamedevLogRoute
   PdfmanagerRoute: typeof PdfmanagerRoute
   TechSpecRoute: typeof TechSpecRoute
+  TechspecWriterRoute: typeof TechspecWriterRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  GamedevLogRoute: GamedevLogRoute,
   PdfmanagerRoute: PdfmanagerRoute,
   TechSpecRoute: TechSpecRoute,
+  TechspecWriterRoute: TechspecWriterRoute,
 }
 
 export const routeTree = rootRoute
@@ -116,18 +165,26 @@ export const routeTree = rootRoute
       "filePath": "__root.tsx",
       "children": [
         "/",
+        "/gamedev-log",
         "/pdf_manager",
-        "/tech-spec"
+        "/tech-spec",
+        "/techspec-writer"
       ]
     },
     "/": {
       "filePath": "index.tsx"
+    },
+    "/gamedev-log": {
+      "filePath": "gamedev-log.tsx"
     },
     "/pdf_manager": {
       "filePath": "pdf_manager.tsx"
     },
     "/tech-spec": {
       "filePath": "tech-spec.tsx"
+    },
+    "/techspec-writer": {
+      "filePath": "techspec-writer.tsx"
     }
   }
 }

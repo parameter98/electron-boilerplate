@@ -1,6 +1,6 @@
 {
-  "name": "electron-app-boilerplate",
-  "productName": "Electron App Boilerplate",
+  "name": "indiegamedev-documentation-app-pack",
+  "productName": "IndieGameDev Documentation App Pack",
   "version": "1.0.0",
   "description": "A boilerplate for Electron apps with Vite, React, TailwindCSS, Electron Forge and many more.",
   "main": ".vite/build/main.js",

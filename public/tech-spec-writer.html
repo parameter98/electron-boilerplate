@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>게임 기술 명세서 작성 앱 (이미지 지원)</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            background-color: #f8f9fa;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: auto;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #343a40;
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            font-weight: bold;
+        }
+
+        #preview {
+            margin-top: 30px;
+            padding: 30px;
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            display: none;
+        }
+
+        .btn-group {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+            gap: 10px;
+        }
+
+        .img-thumbnail-wrapper {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .img-item {
+            position: relative;
+            width: 100px;
+            height: 100px;
+        }
+
+        .img-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 5px;
+        }
+
+        .img-item .delete-btn {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: red;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            font-size: 12px;
+            cursor: pointer;
+        }
+
+        /* 미리보기 내 이미지 스타일 */
+        .preview-img {
+            max-width: 100%;
+            height: auto;
+            margin-top: 15px;
+            border: 1px solid #eee;
+            display: block;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h2>Tech Spec Writer</h2>
+        <p class="text-center text-muted">구현 계획에 이미지를 추가하고 PDF로 저장하세요.</p>
+
+        <form id="specForm">
+            <div class="mb-3">
+                <label for="featureName" class="form-label">Feature/System 이름</label>
+                <input type="text" class="form-control" id="featureName" placeholder="이름 입력">
+            </div>
+            <div class="mb-3">
+                <label for="description" class="form-label">설명</label>
+                <textarea class="form-control" id="description" rows="3"></textarea>
+            </div>
+            <div class="mb-3">
+                <label for="implementationPlan" class="form-label">구현 계획 & 시각 자료</label>
+                <textarea class="form-control" id="implementationPlan" rows="5" placeholder="단계별 계획을 입력하세요."></textarea>
+
+                <div class="mt-3">
+                    <label class="form-label">이미지 첨부 (IndexedDB 저장)</label>
+                    <input type="file" class="form-control" id="imageInput" accept="image/*" multiple>
+                    <div id="imageThumbnails" class="img-thumbnail-wrapper"></div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="goals" class="form-label">목표</label>
+                    <textarea class="form-control" id="goals" rows="3"></textarea>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label for="dependencies" class="form-label">의존성</label>
+                    <textarea class="form-control" id="dependencies" rows="3"></textarea>
+                </div>
+            </div>
+            <div class="mb-3">
+                <label for="requirements" class="form-label">요구사항 (줄바꿈으로 구분)</label>
+                <textarea class="form-control" id="requirements" rows="3"></textarea>
+            </div>
+        </form>
+
+        <div class="btn-group">
+            <button type="button" class="btn btn-primary" onclick="previewContent()">미리보기 업데이트</button>
+            <button type="button" class="btn btn-success" onclick="exportToPDF()">PDF 다운로드</button>
+            <button type="button" class="btn btn-danger" onclick="clearAllData()">모든 데이터 초기화</button>
+        </div>
+
+        <div id="preview">
+            <div id="preview-content"></div>
+        </div>
+    </div>
+
+    <script>
+        /** IndexedDB 설정 **/
+        const dbName = "GameSpecDB";
+        const storeName = "images";
+        let db;
+
+        const request = indexedDB.open(dbName, 1);
+        request.onupgradeneeded = (e) => {
+            db = e.target.result;
+            db.createObjectStore(storeName, { keyPath: "id", autoIncrement: true });
+        };
+        request.onsuccess = (e) => {
+            db = e.target.result;
+            loadThumbnails();
+        };
+
+        // 이미지 파일을 Base64로 변환 후 저장
+        document.getElementById('imageInput').addEventListener('change', function (e) {
+            const files = e.target.files;
+            for (let file of files) {
+                const reader = new FileReader();
+                reader.onload = function (event) {
+                    const transaction = db.transaction([storeName], "readwrite");
+                    transaction.objectStore(storeName).add({
+                        data: event.target.result,
+                        name: file.name
+                    });
+                    transaction.oncomplete = () => loadThumbnails();
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // 저장된 이미지 불러와 썸네일 표시
+        function loadThumbnails() {
+            const container = document.getElementById('imageThumbnails');
+            container.innerHTML = "";
+            const transaction = db.transaction([storeName], "readonly");
+            transaction.objectStore(storeName).openCursor().onsuccess = (e) => {
+                const cursor = e.target.result;
+                if (cursor) {
+                    const div = document.createElement('div');
+                    div.className = 'img-item';
+                    div.innerHTML = `
+                        <img src="${cursor.value.data}">
+                        <button class="delete-btn" onclick="deleteImage(${cursor.value.id})">×</button>
+                    `;
+                    container.appendChild(div);
+                    cursor.continue();
+                }
+            };
+        }
+
+        function deleteImage(id) {
+            const transaction = db.transaction([storeName], "readwrite");
+            transaction.objectStore(storeName).delete(id);
+            transaction.oncomplete = () => loadThumbnails();
+        }
+
+        async function getAllImages() {
+            return new Promise((resolve) => {
+                const images = [];
+                const transaction = db.transaction([storeName], "readonly");
+                transaction.objectStore(storeName).openCursor().onsuccess = (e) => {
+                    const cursor = e.target.result;
+                    if (cursor) {
+                        images.push(cursor.value.data);
+                        cursor.continue();
+                    } else {
+                        resolve(images);
+                    }
+                };
+            });
+        }
+
+        /** HTML 생성 및 미리보기 **/
+        async function generateHTML() {
+            const featureName = document.getElementById('featureName').value || "제목 없음";
+            const description = document.getElementById('description').value.replace(/\n/g, '<br>');
+            const goals = document.getElementById('goals').value.replace(/\n/g, '<br>');
+            const reqInput = document.getElementById('requirements').value;
+            const requirements = reqInput ? reqInput.split('\n').map(item => `<li>${item.trim()}</li>`).join('') : "<li>없음</li>";
+            const implementationPlan = document.getElementById('implementationPlan').value.replace(/\n/g, '<br>');
+            const dependencies = document.getElementById('dependencies').value.replace(/\n/g, '<br>');
+
+            const images = await getAllImages();
+            const imageHtml = images.map(src => `<img src="${src}" class="preview-img">`).join('');
+
+            return `
+                <div style="padding: 20px; color: #333;">
+                    <h2 style="border-bottom: 2px solid #333; padding-bottom: 10px; margin-bottom: 20px;">TECH SPEC SHEET</h2>
+                    <p><strong>Feature Name:</strong> ${featureName}</p>
+                    <p><strong>Description:</strong><br>${description}</p>
+                    <p><strong>Goals:</strong><br>${goals}</p>
+                    <div style="margin: 15px 0;">
+                        <strong>Requirements:</strong>
+                        <ul>${requirements}</ul>
+                    </div>
+                    <div style="background: #f9f9f9; padding: 15px; border-radius: 5px;">
+                        <strong>Implementation Plan:</strong><br>
+                        ${implementationPlan}
+                        <div class="preview-image-container">
+                            ${imageHtml}
+                        </div>
+                    </div>
+                    <p style="margin-top:15px;"><strong>Dependencies:</strong> ${dependencies}</p>
+                </div>
+            `;
+        }
+
+        async function previewContent() {
+            const htmlContent = await generateHTML();
+            const previewDiv = document.getElementById('preview');
+            document.getElementById('preview-content').innerHTML = htmlContent;
+            previewDiv.style.display = 'block';
+            previewDiv.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        /** PDF 출력 **/
+        async function exportToPDF() {
+            const previewElement = document.getElementById('preview-content');
+            const previewContainer = document.getElementById('preview');
+
+            // 1. 최신 내용으로 업데이트 및 화면 표시
+            previewElement.innerHTML = await generateHTML();
+            previewContainer.style.display = 'block';
+
+            // 2. 이미지 로딩 대기 (Base64라 거의 즉시 로드되지만 안전을 위해)
+            const imgs = previewElement.getElementsByTagName('img');
+            const promises = Array.from(imgs).map(img => {
+                if (img.complete) return Promise.resolve();
+                return new Promise(resolve => { img.onload = resolve; img.onerror = resolve; });
+            });
+            await Promise.all(promises);
+
+            // 3. Canvas 생성
+            const canvas = await html2canvas(previewElement, {
+                scale: 3, // 3은 용량이 너무 커질 수 있어 2로 조정
+                useCORS: true,
+                logging: false,
+                backgroundColor: "#ffffff"
+            });
+
+            // 4. PDF 저장 로직
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF('p', 'mm', 'a4');
+            const imgData = canvas.toDataURL('image/png');
+            const imgWidth = 190; // 좌우 여백 고려
+            const pageHeight = 280;
+            const imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+            let heightLeft = imgHeight;
+            let position = 10;
+
+            doc.addImage(imgData, 'PNG', 10, position, imgWidth, imgHeight);
+            heightLeft -= pageHeight;
+
+            while (heightLeft >= 0) {
+                position = heightLeft - imgHeight + 10;
+                doc.addPage();
+                doc.addImage(imgData, 'PNG', 10, position, imgWidth, imgHeight);
+                heightLeft -= pageHeight;
+            }
+
+            const fileName = document.getElementById('featureName').value || 'tech_spec';
+            doc.save(`${fileName}.pdf`);
+        }
+
+        function clearAllData() {
+            if (confirm("모든 텍스트와 이미지를 삭제하시겠습니까?")) {
+                const transaction = db.transaction([storeName], "readwrite");
+                transaction.objectStore(storeName).clear();
+                transaction.oncomplete = () => {
+                    document.getElementById('specForm').reset();
+                    loadThumbnails();
+                    document.getElementById('preview').style.display = 'none';
+                    alert("초기화되었습니다.");
+                };
+            }
+        }
+    </script>
+</body>
+
+</html>
