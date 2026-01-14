@@ -35,9 +35,9 @@ const createWindow = () => {
   }
 
   // Open the DevTools.
-  mainWindow.webContents.openDevTools({
-    mode: "detach",
-  });
+  // mainWindow.webContents.openDevTools({
+  //   mode: "detach",
+  // });
 };
 
 // This method will be called when Electron has finished

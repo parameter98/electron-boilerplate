@@ -10,6 +10,9 @@ export default function Navbar() {
         </Link>{" "}
         <Link to="/about" className="[&.active]:font-bold">
           About
+        </Link>{" "}
+        <Link to="/pdf_manager" className="[&.active]:font-bold">
+          PDF Manager
         </Link>
       </div>
       <ModeToggle />
