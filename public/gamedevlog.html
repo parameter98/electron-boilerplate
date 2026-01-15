@@ -783,7 +783,7 @@
 </head>
 
 <body>
-    <div id="toast-container"></div> <!-- 여기 토스트가 쌓임 -->
+    <div id="toast-container" data-html2canvas-ignore="true"></div> <!-- 여기 토스트가 쌓임 -->
     <div class="container">
         <div class="header">
             <h1>🎮 인디 게임 개발 일일 기록</h1>
@@ -1542,6 +1542,17 @@
         function printPDF() {
             const { html, fileName } = generatePDFContent(false);
             const printContent = document.getElementById('printContent');
+
+            // [추가 1] 토스트 컨테이너 가져오기
+            const toastContainer = document.getElementById('toast-container');
+
+            // [추가 2] 캡처 직전에 토스트 메시지 강제로 숨기기 (display: none)
+            if (toastContainer) {
+                toastContainer.style.visibility = 'hidden'; // 공간은 유지하되 눈에만 안 보이게 (레이아웃 틀어짐 방지)
+                // 만약 레이아웃에 영향을 안 준다면 display = 'none'이 더 확실합니다.
+                // toastContainer.style.display = 'none'; 
+            }
+
             printContent.innerHTML = html;
 
             // 파일명 힌트 제공
@@ -1554,7 +1565,18 @@
                 setTimeout(() => {
                     document.title = '인디 게임 개발 일일 작업 기록';
                 }, 1000);
+
+                // [추가 3] 인쇄 후 토스트 메시지 다시 보이기
+                if (toastContainer) {
+                    toastContainer.style.visibility = 'visible'; // 다시 보이게 설정
+                    // toastContainer.style.display = 'block'; // 만약 display를 none으로 했다면 이렇게 복원
+                }
+
+
             }, 100);
+
+
+
         }
 
         // PDF 콘텐츠 생성 (공통 함수)
