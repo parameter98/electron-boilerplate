@@ -17,6 +17,9 @@ export default function Navbar() {
         <Link to="/techspec-writer" className="[&.active]:font-bold">
           TechSpec Writer
         </Link>{" "}
+        <Link to="/scrum-board" className="[&.active]:font-bold">
+          Scrum Board
+        </Link>{" "}
         <Link to="/tech-spec" className="[&.active]:font-bold">
           TechStack
         </Link>{" "}

@@ -13,6 +13,7 @@
 import { Route as rootRoute } from './app/__root'
 import { Route as TechspecWriterImport } from './app/techspec-writer'
 import { Route as TechSpecImport } from './app/tech-spec'
+import { Route as ScrumBoardImport } from './app/scrum-board'
 import { Route as PdfmanagerImport } from './app/pdf_manager'
 import { Route as GamedevLogImport } from './app/gamedev-log'
 import { Route as IndexImport } from './app/index'
@@ -28,6 +29,12 @@ const TechspecWriterRoute = TechspecWriterImport.update({
 const TechSpecRoute = TechSpecImport.update({
   id: '/tech-spec',
   path: '/tech-spec',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const ScrumBoardRoute = ScrumBoardImport.update({
+  id: '/scrum-board',
+  path: '/scrum-board',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -74,6 +81,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PdfmanagerImport
       parentRoute: typeof rootRoute
     }
+    '/scrum-board': {
+      id: '/scrum-board'
+      path: '/scrum-board'
+      fullPath: '/scrum-board'
+      preLoaderRoute: typeof ScrumBoardImport
+      parentRoute: typeof rootRoute
+    }
     '/tech-spec': {
       id: '/tech-spec'
       path: '/tech-spec'
@@ -97,6 +111,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/gamedev-log': typeof GamedevLogRoute
   '/pdf_manager': typeof PdfmanagerRoute
+  '/scrum-board': typeof ScrumBoardRoute
   '/tech-spec': typeof TechSpecRoute
   '/techspec-writer': typeof TechspecWriterRoute
 }
@@ -105,6 +120,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/gamedev-log': typeof GamedevLogRoute
   '/pdf_manager': typeof PdfmanagerRoute
+  '/scrum-board': typeof ScrumBoardRoute
   '/tech-spec': typeof TechSpecRoute
   '/techspec-writer': typeof TechspecWriterRoute
 }
@@ -114,6 +130,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/gamedev-log': typeof GamedevLogRoute
   '/pdf_manager': typeof PdfmanagerRoute
+  '/scrum-board': typeof ScrumBoardRoute
   '/tech-spec': typeof TechSpecRoute
   '/techspec-writer': typeof TechspecWriterRoute
 }
@@ -124,15 +141,23 @@ export interface FileRouteTypes {
     | '/'
     | '/gamedev-log'
     | '/pdf_manager'
+    | '/scrum-board'
     | '/tech-spec'
     | '/techspec-writer'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/gamedev-log' | '/pdf_manager' | '/tech-spec' | '/techspec-writer'
+  to:
+    | '/'
+    | '/gamedev-log'
+    | '/pdf_manager'
+    | '/scrum-board'
+    | '/tech-spec'
+    | '/techspec-writer'
   id:
     | '__root__'
     | '/'
     | '/gamedev-log'
     | '/pdf_manager'
+    | '/scrum-board'
     | '/tech-spec'
     | '/techspec-writer'
   fileRoutesById: FileRoutesById
@@ -142,6 +167,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   GamedevLogRoute: typeof GamedevLogRoute
   PdfmanagerRoute: typeof PdfmanagerRoute
+  ScrumBoardRoute: typeof ScrumBoardRoute
   TechSpecRoute: typeof TechSpecRoute
   TechspecWriterRoute: typeof TechspecWriterRoute
 }
@@ -150,6 +176,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   GamedevLogRoute: GamedevLogRoute,
   PdfmanagerRoute: PdfmanagerRoute,
+  ScrumBoardRoute: ScrumBoardRoute,
   TechSpecRoute: TechSpecRoute,
   TechspecWriterRoute: TechspecWriterRoute,
 }
@@ -167,6 +194,7 @@ export const routeTree = rootRoute
         "/",
         "/gamedev-log",
         "/pdf_manager",
+        "/scrum-board",
         "/tech-spec",
         "/techspec-writer"
       ]
@@ -179,6 +207,9 @@ export const routeTree = rootRoute
     },
     "/pdf_manager": {
       "filePath": "pdf_manager.tsx"
+    },
+    "/scrum-board": {
+      "filePath": "scrum-board.tsx"
     },
     "/tech-spec": {
       "filePath": "tech-spec.tsx"
