@@ -27,9 +27,10 @@ const TrelloCardAdder: React.FC<{
     };
 
     return (
-        <div className="trello-example-new-card">
+        <div className="trello-example-new-card p-2 bg-white rounded-[8px] border border-gray-300 shadow-sm">
             <input
                 type="text"
+                className="w-full p-2 border border-gray-300 rounded-[4px] mb-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 onChange={(e) => setNewCardTitle(e.target.value)}
                 placeholder="Enter a title for this card..."
                 autoFocus
@@ -41,11 +42,17 @@ const TrelloCardAdder: React.FC<{
                     }
                 }}
             />
-            <div className="trello-example-new-card-buttons">
-                <button onClick={() => addCardHandler(columnId, newCardTitle)}>
+            <div className="trello-example-new-card-buttons flex gap-2">
+                <button
+                    className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded-[4px] text-sm font-medium"
+                    onClick={() => addCardHandler(columnId, newCardTitle)}
+                >
                     Add
                 </button>
-                <button onClick={() => removeCardPlaceholderHandler(columnId)}>
+                <button
+                    className="bg-gray-300 hover:bg-gray-400 text-gray-700 px-3 py-1 rounded-[4px] text-sm font-medium"
+                    onClick={() => removeCardPlaceholderHandler(columnId)}
+                >
                     Cancel
                 </button>
             </div>
@@ -169,10 +176,13 @@ export const TrelloExample: React.FC = () => {
                             },
                         }}
                         columnClassName={() => "trello-example-column !bg-[#ebecf0] !p-[6px] !pr-[2px] !rounded-[12px] shadow-[0px_1px_1px_#091e4240,_0px_0px_1px_#091e424f]"}
+                        columnOuterClassName={() => "w-[272px] !w-[272px] min-w-[272px] !min-w-[272px]"}
+                        columnWrapperClassName={() => "!gap-[8px]"}
+                        columnContentListClassName={() => "p-[0_3px_0_2px]"}
                         renderColumnHeader={(column) => (
                             <div className="trello-example-column-header flex items-center justify-between h-[32px] text-[14px] !pr-[8px] font-semibold text-[#172b4d] p-[6px_0_6px_12px]">
                                 <span className="flex-1">{column.title}</span>
-                                <div className="trello-example-column-header-count">
+                                <div className="trello-example-column-header-count bg-gray-200 rounded px-2 py-1 text-xs text-gray-600">
                                     {column.totalItemsCount || 0}
                                 </div>
                                 <div className="trello-example-column-header-settings flex items-center justify-center w-[32px] h-[32px] rounded-[3px] cursor-pointer transition-colors duration-200 text-[#6b778c] hover:bg-[#091e4224] hover:text-[#172b4d]">
