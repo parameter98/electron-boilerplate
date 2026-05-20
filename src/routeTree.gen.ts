@@ -11,17 +11,10 @@
 // Import Routes
 
 import { Route as rootRoute } from './app/__root'
-import { Route as PdfmanagerImport } from './app/pdf_manager'
 import { Route as AboutImport } from './app/about'
 import { Route as IndexImport } from './app/index'
 
 // Create/Update Routes
-
-const PdfmanagerRoute = PdfmanagerImport.update({
-  id: '/pdf_manager',
-  path: '/pdf_manager',
-  getParentRoute: () => rootRoute,
-} as any)
 
 const AboutRoute = AboutImport.update({
   id: '/about',
@@ -53,13 +46,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AboutImport
       parentRoute: typeof rootRoute
     }
-    '/pdf_manager': {
-      id: '/pdf_manager'
-      path: '/pdf_manager'
-      fullPath: '/pdf_manager'
-      preLoaderRoute: typeof PdfmanagerImport
-      parentRoute: typeof rootRoute
-    }
   }
 }
 
@@ -68,41 +54,36 @@ declare module '@tanstack/react-router' {
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
-  '/pdf_manager': typeof PdfmanagerRoute
 }
 
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
-  '/pdf_manager': typeof PdfmanagerRoute
 }
 
 export interface FileRoutesById {
   __root__: typeof rootRoute
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
-  '/pdf_manager': typeof PdfmanagerRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/about' | '/pdf_manager'
+  fullPaths: '/' | '/about'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/about' | '/pdf_manager'
-  id: '__root__' | '/' | '/about' | '/pdf_manager'
+  to: '/' | '/about'
+  id: '__root__' | '/' | '/about'
   fileRoutesById: FileRoutesById
 }
 
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AboutRoute: typeof AboutRoute
-  PdfmanagerRoute: typeof PdfmanagerRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
-  PdfmanagerRoute: PdfmanagerRoute,
 }
 
 export const routeTree = rootRoute
@@ -116,8 +97,7 @@ export const routeTree = rootRoute
       "filePath": "__root.tsx",
       "children": [
         "/",
-        "/about",
-        "/pdf_manager"
+        "/about"
       ]
     },
     "/": {
@@ -125,9 +105,6 @@ export const routeTree = rootRoute
     },
     "/about": {
       "filePath": "about.tsx"
-    },
-    "/pdf_manager": {
-      "filePath": "pdf_manager.tsx"
     }
   }
 }
