@@ -11,6 +11,9 @@ export default function Navbar() {
         <Link to="/about" className="[&.active]:font-bold">
           About
         </Link>
+        <Link to="/config" className="[&.active]:font-bold">
+          Config
+        </Link>
       </div>
       <ModeToggle />
     </div>

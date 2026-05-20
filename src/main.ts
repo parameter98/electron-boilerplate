@@ -1,4 +1,5 @@
-import { app, BrowserWindow, ipcMain } from "electron";
+import { app, BrowserWindow, ipcMain, dialog } from "electron";
+import fs from "node:fs/promises" // file system
 import path from "path";
 import { shell } from "electron";
 import started from "electron-squirrel-startup";
@@ -79,5 +80,56 @@ ipcMain.on("maximize", () => {
     focusedWindow.unmaximize();
   } else {
     focusedWindow?.maximize();
+  }
+});
+
+// Handle executable path picking
+ipcMain.handle("dialog:pickExecutable", async () => {
+  const traceId = `pick-exe-${Date.now()}`;
+  console.log("[main]", traceId, "open dialog");
+
+  const result = await dialog.showOpenDialog({
+    properties: ["openFile"],
+    filters: [{ name: "Executable", extensions: ["exe"] }],
+  });
+
+  console.log("[main]", traceId, "dialog result", {
+    canceled: result.canceled,
+    filePaths: result.filePaths,
+  });
+
+  if (result.canceled || result.filePaths.length === 0) {
+    console.log("[main]", traceId, "return null");
+    return null;
+  }
+
+  console.log("[main]", traceId, "return path", result.filePaths[0]);
+  return result.filePaths[0];
+});
+
+ipcMain.handle("path:validateExecutable", async (_event, filePath: string) => {
+  try {
+    const normalized = path.normalize(filePath);
+    const stat = await fs.stat(normalized);
+    const exists = stat.isFile();
+    const extOk = path.extname(normalized).toLowerCase() === ".exe";
+
+    const base = path.basename(normalized).toLowerCase();
+    const looksLikeTarget =
+      base.includes("lm studio") || base.includes("anythingllm") || base.includes("chromesetup");
+
+    return {
+      ok: exists && extOk,
+      exists,
+      extOk,
+      looksLikeTarget,
+    };
+  } catch (error: any) {
+    return {
+      ok: false,
+      exists: false,
+      extOk: false,
+      error: error?.message ?? "Unknown error",
+    };
   }
 });
