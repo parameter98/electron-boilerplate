@@ -1,47 +1,28 @@
 <!DOCTYPE html>
 <html lang="ko">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>인디 게임 개발 일일 작업 기록</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
         @media print {
-            body {
-                margin: 0;
-                padding: 20px;
-            }
-
-            .no-print {
-                display: none;
-            }
-
-            .page-break {
-                page-break-after: always;
-            }
-
-            .container,
-            .main-content {
-                display: none !important;
-            }
-
-            #printContent {
-                display: block !important;
-            }
+            body { margin: 0; padding: 20px; }
+            .no-print { display: none; }
+            .page-break { page-break-after: always; }
+            .container, .main-content { display: none !important; }
+            #printContent { display: block !important; }
         }
-
-        #pdfContent,
-        #printContent {
+        
+        #pdfContent, #printContent {
             max-width: 210mm;
             margin: 0 auto;
             background: white;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             padding: 40px;
         }
-
+        
         .pdf-header {
             text-align: center;
             padding: 40px 20px;
@@ -49,22 +30,22 @@
             color: white;
             margin-bottom: 30px;
         }
-
+        
         .pdf-header h1 {
             font-size: 32px;
             margin-bottom: 10px;
         }
-
+        
         .pdf-header .date {
             font-size: 18px;
             opacity: 0.95;
         }
-
+        
         .pdf-section {
             margin-bottom: 25px;
             padding: 0 40px;
         }
-
+        
         .pdf-section-title {
             font-size: 20px;
             font-weight: 700;
@@ -76,7 +57,7 @@
             align-items: center;
             gap: 10px;
         }
-
+        
         .pdf-content-text {
             font-size: 15px;
             line-height: 1.8;
@@ -87,12 +68,12 @@
             border-radius: 8px;
             margin-bottom: 10px;
         }
-
+        
         .pdf-task-list {
             list-style: none;
             padding: 0;
         }
-
+        
         .pdf-task-item {
             padding: 12px;
             margin-bottom: 10px;
@@ -100,15 +81,15 @@
             border-radius: 8px;
             border-left: 4px solid #667eea;
         }
-
+        
         .pdf-task-item.completed {
             border-left-color: #28a745;
         }
-
+        
         .pdf-task-item.in-progress {
             border-left-color: #ffc107;
         }
-
+        
         .pdf-task-text {
             font-size: 15px;
             margin-bottom: 8px;
@@ -118,13 +99,13 @@
             color: #000000;
             font-weight: 500;
         }
-
+        
         .pdf-task-images {
             display: grid;
             gap: 15px;
             margin-top: 15px;
         }
-
+        
         .pdf-task-image {
             width: 100%;
             max-height: 500px;
@@ -133,18 +114,18 @@
             border: 2px solid #e0e0e0;
             background: #f8f9fa;
         }
-
+        
         .pdf-task-images.multiple {
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
         }
-
+        
         .pdf-stats {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             gap: 15px;
             margin-bottom: 20px;
         }
-
+        
         .pdf-stat-box {
             background: #f8f9fa;
             padding: 20px;
@@ -152,20 +133,20 @@
             text-align: center;
             border-left: 4px solid #667eea;
         }
-
+        
         .pdf-stat-label {
             font-size: 13px;
             color: #000000;
             margin-bottom: 8px;
             font-weight: 500;
         }
-
+        
         .pdf-stat-value {
             font-size: 28px;
             font-weight: 700;
             color: #000000;
         }
-
+        
         .pdf-mood {
             display: inline-block;
             padding: 10px 20px;
@@ -176,7 +157,7 @@
             margin-bottom: 10px;
             color: #000000;
         }
-
+        
         .pdf-footer {
             text-align: center;
             padding: 30px;
@@ -185,13 +166,13 @@
             border-top: 2px solid #e0e0e0;
             margin-top: 40px;
         }
-
+        
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
-
+        
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -199,26 +180,26 @@
             padding: 20px;
             transition: background 0.3s;
         }
-
+        
         body.dark-mode {
             background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
         }
-
+        
         .container {
             max-width: 1200px;
             margin: 0 auto;
             background: white;
             border-radius: 16px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
             overflow: hidden;
             transition: background 0.3s, color 0.3s;
         }
-
+        
         body.dark-mode .container {
             background: #1e1e1e;
             color: #e0e0e0;
         }
-
+        
         .header {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
@@ -226,16 +207,16 @@
             text-align: center;
             position: relative;
         }
-
+        
         body.dark-mode .header {
             background: linear-gradient(135deg, #0f3460 0%, #16213e 100%);
         }
-
+        
         .dark-mode-toggle {
             position: absolute;
             top: 30px;
             right: 30px;
-            background: rgba(255, 255, 255, 0.2);
+            background: rgba(255,255,255,0.2);
             border: none;
             color: white;
             padding: 10px 20px;
@@ -245,25 +226,25 @@
             font-weight: 600;
             transition: background 0.3s;
         }
-
+        
         .dark-mode-toggle:hover {
-            background: rgba(255, 255, 255, 0.3);
+            background: rgba(255,255,255,0.3);
         }
-
+        
         .header h1 {
             font-size: 28px;
             margin-bottom: 8px;
         }
-
+        
         .header p {
             opacity: 0.9;
             font-size: 14px;
         }
-
+        
         .main-content {
             display: flex;
         }
-
+        
         .sidebar {
             width: 280px;
             background: #f8f9fa;
@@ -271,28 +252,28 @@
             border-right: 1px solid #e0e0e0;
             transition: background 0.3s, border-color 0.3s;
         }
-
+        
         body.dark-mode .sidebar {
             background: #2a2a2a;
             border-right-color: #3a3a3a;
         }
-
+        
         .sidebar h3 {
             font-size: 16px;
             margin-bottom: 15px;
             color: #333;
             transition: color 0.3s;
         }
-
+        
         body.dark-mode .sidebar h3 {
             color: #e0e0e0;
         }
-
+        
         .log-list {
             max-height: calc(100vh - 250px);
             overflow-y: auto;
         }
-
+        
         .log-item {
             background: white;
             padding: 12px;
@@ -302,36 +283,36 @@
             border: 2px solid transparent;
             transition: all 0.3s;
         }
-
+        
         body.dark-mode .log-item {
             background: #333;
             color: #e0e0e0;
         }
-
+        
         .log-item:hover {
             border-color: #667eea;
             transform: translateX(5px);
         }
-
+        
         .log-item.active {
             border-color: #667eea;
             background: #f0f4ff;
         }
-
+        
         body.dark-mode .log-item.active {
             background: #0f3460;
         }
-
+        
         .log-date {
             font-weight: 600;
             color: #667eea;
             font-size: 14px;
         }
-
+        
         body.dark-mode .log-date {
             color: #8fa3ff;
         }
-
+        
         .log-preview {
             font-size: 12px;
             color: #666;
@@ -340,18 +321,18 @@
             text-overflow: ellipsis;
             white-space: nowrap;
         }
-
+        
         body.dark-mode .log-preview {
             color: #999;
         }
-
+        
         .content {
             flex: 1;
             padding: 40px;
             overflow-y: auto;
             max-height: calc(100vh - 150px);
         }
-
+        
         .date-section {
             display: flex;
             gap: 20px;
@@ -359,11 +340,11 @@
             padding-bottom: 20px;
             border-bottom: 2px solid #e0e0e0;
         }
-
+        
         .date-input {
             flex: 1;
         }
-
+        
         .date-input label {
             display: block;
             font-weight: 600;
@@ -372,11 +353,11 @@
             font-size: 14px;
             transition: color 0.3s;
         }
-
+        
         body.dark-mode .date-input label {
             color: #e0e0e0;
         }
-
+        
         .date-input input {
             width: 100%;
             padding: 12px;
@@ -385,26 +366,26 @@
             font-size: 16px;
             transition: border-color 0.3s, background 0.3s, color 0.3s;
         }
-
+        
         body.dark-mode .date-input input {
             background: #333;
             border-color: #3a3a3a;
             color: #e0e0e0;
         }
-
+        
         .date-input input:focus {
             outline: none;
             border-color: #667eea;
         }
-
+        
         body.dark-mode .date-input input:focus {
             border-color: #8fa3ff;
         }
-
+        
         .section {
             margin-bottom: 30px;
         }
-
+        
         .section-title {
             font-size: 18px;
             font-weight: 700;
@@ -417,18 +398,17 @@
             gap: 10px;
             transition: color 0.3s, border-color 0.3s;
         }
-
+        
         body.dark-mode .section-title {
             color: #8fa3ff;
             border-bottom-color: #8fa3ff;
         }
-
+        
         .icon {
             font-size: 20px;
         }
-
-        textarea,
-        input[type="text"] {
+        
+        textarea, input[type="text"] {
             width: 100%;
             padding: 12px;
             border: 2px solid #e0e0e0;
@@ -438,30 +418,29 @@
             resize: vertical;
             transition: border-color 0.3s, background 0.3s, color 0.3s;
         }
-
+        
         body.dark-mode textarea,
         body.dark-mode input[type="text"] {
             background: #333;
             border-color: #3a3a3a;
             color: #e0e0e0;
         }
-
-        textarea:focus,
-        input[type="text"]:focus {
+        
+        textarea:focus, input[type="text"]:focus {
             outline: none;
             border-color: #667eea;
         }
-
+        
         body.dark-mode textarea:focus,
         body.dark-mode input[type="text"]:focus {
             border-color: #8fa3ff;
         }
-
+        
         .tasks-grid {
             display: grid;
             gap: 12px;
         }
-
+        
         .task-item {
             background: #f8f9fa;
             padding: 12px;
@@ -469,43 +448,43 @@
             border: 2px solid #e0e0e0;
             transition: background 0.3s, border-color 0.3s;
         }
-
+        
         body.dark-mode .task-item {
             background: #2a2a2a;
             border-color: #3a3a3a;
         }
-
+        
         .task-header {
             display: flex;
             gap: 12px;
             align-items: center;
             margin-bottom: 10px;
         }
-
+        
         .task-header input[type="checkbox"] {
             width: 20px;
             height: 20px;
             cursor: pointer;
         }
-
+        
         .task-header input[type="text"] {
             flex: 1;
             margin: 0;
         }
-
+        
         .task-images {
             display: flex;
             gap: 10px;
             flex-wrap: wrap;
             margin-top: 10px;
         }
-
+        
         .task-image-container {
             position: relative;
             width: 150px;
             height: 150px;
         }
-
+        
         .task-image {
             width: 100%;
             height: 100%;
@@ -513,7 +492,7 @@
             border-radius: 8px;
             cursor: pointer;
         }
-
+        
         .remove-image {
             position: absolute;
             top: 5px;
@@ -528,7 +507,7 @@
             font-size: 16px;
             line-height: 1;
         }
-
+        
         .image-upload-btn {
             display: inline-flex;
             align-items: center;
@@ -543,11 +522,11 @@
             font-weight: 600;
             transition: background 0.3s;
         }
-
+        
         .image-upload-btn:hover {
             background: #5568d3;
         }
-
+        
         .add-task-btn {
             background: #667eea;
             color: white;
@@ -560,36 +539,36 @@
             transition: background 0.3s;
             margin-top: 10px;
         }
-
+        
         .add-task-btn:hover {
             background: #5568d3;
         }
-
+        
         .mood-selector {
             display: flex;
             gap: 15px;
             flex-wrap: wrap;
         }
-
+        
         .mood-option {
             display: flex;
             align-items: center;
             gap: 8px;
         }
-
+        
         .mood-option input[type="radio"] {
             width: 18px;
             height: 18px;
             cursor: pointer;
         }
-
+        
         .stats {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 15px;
             margin-top: 10px;
         }
-
+        
         .stat-box {
             background: #f8f9fa;
             padding: 15px;
@@ -597,23 +576,23 @@
             border-left: 4px solid #667eea;
             transition: background 0.3s, border-color 0.3s;
         }
-
+        
         body.dark-mode .stat-box {
             background: #2a2a2a;
             border-left-color: #8fa3ff;
         }
-
+        
         .stat-label {
             font-size: 12px;
             color: #666;
             margin-bottom: 5px;
             transition: color 0.3s;
         }
-
+        
         body.dark-mode .stat-label {
             color: #999;
         }
-
+        
         .stat-input {
             font-size: 24px;
             font-weight: 700;
@@ -624,15 +603,15 @@
             padding: 0;
             transition: color 0.3s;
         }
-
+        
         body.dark-mode .stat-input {
             color: #e0e0e0;
         }
-
+        
         .stat-input:focus {
             outline: none;
         }
-
+        
         .buttons {
             display: flex;
             gap: 15px;
@@ -640,7 +619,7 @@
             padding-top: 30px;
             border-top: 2px solid #e0e0e0;
         }
-
+        
         .btn {
             flex: 1;
             padding: 15px;
@@ -651,36 +630,36 @@
             cursor: pointer;
             transition: all 0.3s;
         }
-
+        
         .btn-primary {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
         }
-
+        
         .btn-primary:hover {
             transform: translateY(-2px);
             box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
         }
-
+        
         .btn-secondary {
             background: white;
             color: #667eea;
             border: 2px solid #667eea;
         }
-
+        
         .btn-secondary:hover {
             background: #f8f9fa;
         }
-
+        
         .btn-danger {
             background: #dc3545;
             color: white;
         }
-
+        
         .btn-danger:hover {
             background: #c82333;
         }
-
+        
         .modal {
             display: none;
             position: fixed;
@@ -688,109 +667,40 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: rgba(0, 0, 0, 0.8);
+            background: rgba(0,0,0,0.8);
             z-index: 1000;
             align-items: center;
             justify-content: center;
         }
-
+        
         .modal.active {
             display: flex;
         }
-
+        
         .modal-content {
             max-width: 90%;
             max-height: 90%;
         }
-
+        
         .modal-content img {
             max-width: 100%;
             max-height: 90vh;
             border-radius: 8px;
         }
-
+        
         input[type="file"] {
             display: none;
         }
-
-        /* 토스트 컨테이너 */
-        #toast-container {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            z-index: 9999;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-
-        /* 토스트 메시지 박스 */
-        .toast {
-            min-width: 250px;
-            padding: 16px 20px;
-            border-radius: 12px;
-            background: white;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            animation: slideIn 0.3s ease-out forwards;
-            opacity: 0;
-            transform: translateX(100%);
-            border-left: 5px solid #667eea;
-            /* 기본 컬러 */
-        }
-
-        .toast.success {
-            border-left-color: #28a745;
-        }
-
-        .toast.error {
-            border-left-color: #dc3545;
-        }
-
-        .toast.dark-mode {
-            background: #333;
-            color: #fff;
-        }
-
-        /* 텍스트 스타일 */
-        .toast-message {
-            font-size: 14px;
-            font-weight: 500;
-            color: #333;
-        }
-
-        .toast.dark-mode .toast-message {
-            color: #fff;
-        }
-
-        /* 애니메이션 */
-        @keyframes slideIn {
-            to {
-                opacity: 1;
-                transform: translateX(0);
-            }
-        }
-
-        @keyframes fadeOut {
-            to {
-                opacity: 0;
-                transform: translateX(100%);
-            }
-        }
     </style>
 </head>
-
 <body>
-    <div id="toast-container"></div> <!-- 여기 토스트가 쌓임 -->
     <div class="container">
         <div class="header">
             <h1>🎮 인디 게임 개발 일일 기록</h1>
             <p>매일의 작은 진전이 위대한 게임을 만듭니다</p>
             <button class="dark-mode-toggle" onclick="toggleDarkMode()">🌙 다크모드</button>
         </div>
-
+        
         <div class="main-content">
             <div class="sidebar no-print">
                 <h3>📚 저장된 기록</h3>
@@ -803,7 +713,7 @@
                     ➕ 새 기록 만들기
                 </button>
             </div>
-
+            
             <div class="content">
                 <div class="date-section">
                     <div class="date-input">
@@ -815,7 +725,7 @@
                         <input type="text" id="workHours" placeholder="예: 9:00 - 18:00">
                     </div>
                 </div>
-
+                
                 <div class="section">
                     <div class="section-title">
                         <span class="icon">🎯</span>
@@ -823,7 +733,7 @@
                     </div>
                     <textarea id="todayGoal" rows="3" placeholder="오늘 달성하고 싶은 것을 작성하세요..."></textarea>
                 </div>
-
+                
                 <div class="section">
                     <div class="section-title">
                         <span class="icon">✅</span>
@@ -832,7 +742,7 @@
                     <div class="tasks-grid" id="completedTasks"></div>
                     <button class="add-task-btn" onclick="addTask('completedTasks', true)">+ 작업 추가</button>
                 </div>
-
+                
                 <div class="section">
                     <div class="section-title">
                         <span class="icon">🚧</span>
@@ -841,7 +751,7 @@
                     <div class="tasks-grid" id="inProgressTasks"></div>
                     <button class="add-task-btn" onclick="addTask('inProgressTasks', false)">+ 작업 추가</button>
                 </div>
-
+                
                 <div class="section">
                     <div class="section-title">
                         <span class="icon">💡</span>
@@ -849,7 +759,7 @@
                     </div>
                     <textarea id="learnings" rows="4" placeholder="새로 배운 기술, 해결한 문제, 개선한 점 등을 기록하세요..."></textarea>
                 </div>
-
+                
                 <div class="section">
                     <div class="section-title">
                         <span class="icon">⚠️</span>
@@ -857,7 +767,7 @@
                     </div>
                     <textarea id="issues" rows="3" placeholder="직면한 문제, 해결이 필요한 사항을 기록하세요..."></textarea>
                 </div>
-
+                
                 <div class="section">
                     <div class="section-title">
                         <span class="icon">📊</span>
@@ -878,7 +788,7 @@
                         </div>
                     </div>
                 </div>
-
+                
                 <div class="section">
                     <div class="section-title">
                         <span class="icon">😊</span>
@@ -906,10 +816,9 @@
                             <label for="mood1">😓 힘듦</label>
                         </div>
                     </div>
-                    <textarea id="moodNote" rows="2" placeholder="오늘의 기분에 대해 자유롭게 작성하세요..."
-                        style="margin-top: 15px;"></textarea>
+                    <textarea id="moodNote" rows="2" placeholder="오늘의 기분에 대해 자유롭게 작성하세요..." style="margin-top: 15px;"></textarea>
                 </div>
-
+                
                 <div class="section">
                     <div class="section-title">
                         <span class="icon">📝</span>
@@ -917,7 +826,7 @@
                     </div>
                     <textarea id="tomorrow" rows="3" placeholder="내일 진행할 작업을 미리 계획하세요..."></textarea>
                 </div>
-
+                
                 <div class="section">
                     <div class="section-title">
                         <span class="icon">💭</span>
@@ -925,7 +834,7 @@
                     </div>
                     <textarea id="notes" rows="3" placeholder="기타 생각, 아이디어, 메모사항..."></textarea>
                 </div>
-
+                
                 <div class="buttons no-print">
                     <button class="btn btn-secondary" onclick="printPDF()">🖨️ PDF 인쇄</button>
                     <button class="btn btn-secondary" onclick="generatePDF(false)">📥 PDF 다운로드</button>
@@ -936,49 +845,49 @@
             </div>
         </div>
     </div>
-
+    
     <div class="modal" id="imageModal" onclick="closeModal()">
         <div class="modal-content">
             <img id="modalImage" src="" alt="">
         </div>
     </div>
-
+    
     <div id="pdfContent" style="display: none;">
         <!-- PDF 전용 컨텐츠가 여기에 동적으로 생성됩니다 -->
     </div>
-
+    
     <div id="printContent" style="display: none;">
         <!-- 인쇄 전용 컨텐츠가 여기에 동적으로 생성됩니다 -->
     </div>
-
+    
     <script>
         let db;
         let currentLogId = null;
-
+        
         // IndexedDB 초기화
         function initDB() {
             const request = indexedDB.open('GameDevLogDB', 1);
-
+            
             request.onerror = () => {
                 console.error('Database failed to open');
             };
-
+            
             request.onsuccess = () => {
                 db = request.result;
                 loadLogList();
                 createNewLog();
             };
-
+            
             request.onupgradeneeded = (e) => {
                 db = e.target.result;
-
+                
                 if (!db.objectStoreNames.contains('logs')) {
                     const objectStore = db.createObjectStore('logs', { keyPath: 'id', autoIncrement: true });
                     objectStore.createIndex('date', 'date', { unique: false });
                 }
             };
         }
-
+        
         // 새 로그 생성
         function createNewLog() {
             currentLogId = null;
@@ -996,22 +905,22 @@
             document.getElementById('completedTasks').innerHTML = '';
             document.getElementById('inProgressTasks').innerHTML = '';
             document.querySelector('input[name="mood"][value="3"]').checked = true;
-
+            
             addTask('completedTasks', true);
             addTask('inProgressTasks', false);
-
+            
             document.querySelectorAll('.log-item').forEach(item => item.classList.remove('active'));
         }
-
+        
         // 작업 항목 추가
         function addTask(containerId, isCompleted) {
             const container = document.getElementById(containerId);
             const taskId = Date.now() + Math.random();
-
+            
             const taskItem = document.createElement('div');
             taskItem.className = 'task-item';
             taskItem.dataset.taskId = taskId;
-
+            
             taskItem.innerHTML = `
                 <div class="task-header">
                     <input type="checkbox" ${isCompleted ? 'checked' : ''}>
@@ -1023,56 +932,56 @@
                 </div>
                 <div class="task-images" id="images-${taskId}"></div>
             `;
-
+            
             container.appendChild(taskItem);
         }
-
+        
         // 이미지 업로드 처리
         function handleImageUpload(event, taskId) {
             const files = event.target.files;
             const imagesContainer = document.getElementById(`images-${taskId}`);
-
+            
             Array.from(files).forEach(file => {
                 const reader = new FileReader();
                 reader.onload = (e) => {
                     const imageContainer = document.createElement('div');
                     imageContainer.className = 'task-image-container';
-
+                    
                     const img = document.createElement('img');
                     img.src = e.target.result;
                     img.className = 'task-image';
                     img.onclick = () => openModal(e.target.result);
-
+                    
                     const removeBtn = document.createElement('button');
                     removeBtn.className = 'remove-image';
                     removeBtn.innerHTML = '×';
                     removeBtn.onclick = () => imageContainer.remove();
-
+                    
                     imageContainer.appendChild(img);
                     imageContainer.appendChild(removeBtn);
                     imagesContainer.appendChild(imageContainer);
                 };
                 reader.readAsDataURL(file);
             });
-
+            
             event.target.value = '';
         }
-
+        
         // 모달 열기/닫기
         function openModal(src) {
             document.getElementById('modalImage').src = src;
             document.getElementById('imageModal').classList.add('active');
         }
-
+        
         function closeModal() {
             document.getElementById('imageModal').classList.remove('active');
         }
-
+        
         // 현재 로그 저장
         function saveCurrentLog() {
             const completedTasks = collectTasks('completedTasks');
             const inProgressTasks = collectTasks('inProgressTasks');
-
+            
             const logData = {
                 date: document.getElementById('workDate').value,
                 hours: document.getElementById('workHours').value,
@@ -1090,65 +999,65 @@
                 notes: document.getElementById('notes').value,
                 timestamp: new Date().toISOString()
             };
-
+            
             if (currentLogId) {
                 logData.id = currentLogId;
             }
-
+            
             const transaction = db.transaction(['logs'], 'readwrite');
             const objectStore = transaction.objectStore('logs');
             const request = currentLogId ? objectStore.put(logData) : objectStore.add(logData);
-
+            
             request.onsuccess = (e) => {
                 currentLogId = e.target.result;
                 loadLogList();
-                showToast('작업 기록이 저장되었습니다!', 'success');
+                alert('✅ 작업 기록이 저장되었습니다!');
             };
-
+            
             request.onerror = () => {
-                showToast('❌ 저장에 실패했습니다.', 'error');
+                alert('❌ 저장에 실패했습니다.');
             };
         }
-
+        
         // 작업 수집
         function collectTasks(containerId) {
             const container = document.getElementById(containerId);
             const tasks = [];
-
+            
             container.querySelectorAll('.task-item').forEach(item => {
                 const checkbox = item.querySelector('input[type="checkbox"]');
                 const textInput = item.querySelector('input[type="text"]');
                 const images = [];
-
+                
                 item.querySelectorAll('.task-image').forEach(img => {
                     images.push(img.src);
                 });
-
+                
                 tasks.push({
                     text: textInput.value,
                     completed: checkbox.checked,
                     images: images
                 });
             });
-
+            
             return tasks;
         }
-
+        
         // 로그 목록 로드
         function loadLogList() {
             const transaction = db.transaction(['logs'], 'readonly');
             const objectStore = transaction.objectStore('logs');
             const request = objectStore.getAll();
-
+            
             request.onsuccess = () => {
                 const logs = request.result.sort((a, b) => new Date(b.date) - new Date(a.date));
                 const logList = document.getElementById('logList');
-
+                
                 if (logs.length === 0) {
                     logList.innerHTML = '<div style="text-align: center; padding: 20px; color: #999;">아직 저장된 기록이 없습니다</div>';
                     return;
                 }
-
+                
                 logList.innerHTML = '';
                 logs.forEach(log => {
                     const logItem = document.createElement('div');
@@ -1156,28 +1065,28 @@
                     if (log.id === currentLogId) {
                         logItem.classList.add('active');
                     }
-
+                    
                     logItem.innerHTML = `
                         <div class="log-date">${log.date}</div>
                         <div class="log-preview">${log.goal || '목표 없음'}</div>
                     `;
-
+                    
                     logItem.onclick = (e) => loadLog(log.id, e.currentTarget);
                     logList.appendChild(logItem);
                 });
             };
         }
-
+        
         // 특정 로그 로드
         function loadLog(id, clickedElement) {
             const transaction = db.transaction(['logs'], 'readonly');
             const objectStore = transaction.objectStore('logs');
             const request = objectStore.get(id);
-
+            
             request.onsuccess = () => {
                 const log = request.result;
                 currentLogId = id;
-
+                
                 document.getElementById('workDate').value = log.date;
                 document.getElementById('workHours').value = log.hours || '';
                 document.getElementById('todayGoal').value = log.goal || '';
@@ -1189,34 +1098,34 @@
                 document.getElementById('moodNote').value = log.moodNote || '';
                 document.getElementById('tomorrow').value = log.tomorrow || '';
                 document.getElementById('notes').value = log.notes || '';
-
+                
                 if (log.mood) {
                     document.querySelector(`input[name="mood"][value="${log.mood}"]`).checked = true;
                 } else {
                     document.querySelector('input[name="mood"][value="3"]').checked = true;
                 }
-
+                
                 loadTasks('completedTasks', log.completedTasks || []);
                 loadTasks('inProgressTasks', log.inProgressTasks || []);
-
+                
                 document.querySelectorAll('.log-item').forEach(item => item.classList.remove('active'));
                 if (clickedElement) {
                     clickedElement.classList.add('active');
                 }
             };
         }
-
+        
         // 작업 로드
         function loadTasks(containerId, tasks) {
             const container = document.getElementById(containerId);
             container.innerHTML = '';
-
+            
             tasks.forEach(task => {
                 const taskId = Date.now() + Math.random();
                 const taskItem = document.createElement('div');
                 taskItem.className = 'task-item';
                 taskItem.dataset.taskId = taskId;
-
+                
                 taskItem.innerHTML = `
                     <div class="task-header">
                         <input type="checkbox" ${task.completed ? 'checked' : ''}>
@@ -1228,207 +1137,192 @@
                     </div>
                     <div class="task-images" id="images-${taskId}"></div>
                 `;
-
+                
                 container.appendChild(taskItem);
-
+                
                 // 이미지 로드
                 const imagesContainer = document.getElementById(`images-${taskId}`);
                 task.images.forEach(imgSrc => {
                     const imageContainer = document.createElement('div');
                     imageContainer.className = 'task-image-container';
-
+                    
                     const img = document.createElement('img');
                     img.src = imgSrc;
                     img.className = 'task-image';
                     img.onclick = () => openModal(imgSrc);
-
+                    
                     const removeBtn = document.createElement('button');
                     removeBtn.className = 'remove-image';
                     removeBtn.innerHTML = '×';
                     removeBtn.onclick = () => imageContainer.remove();
-
+                    
                     imageContainer.appendChild(img);
                     imageContainer.appendChild(removeBtn);
                     imagesContainer.appendChild(imageContainer);
                 });
             });
         }
-
+        
         // 현재 로그 삭제
         function deleteCurrentLog() {
             if (!currentLogId) {
-                showToast('삭제할 기록이 없습니다.', 'error');
+                alert('삭제할 기록이 없습니다.');
                 return;
             }
-            // SweetAlert2 사용
-            Swal.fire({
-                title: '정말 이 기록을 삭제하시겠습니까?',
-                text: "삭제된 기록은 복구할 수 없습니다!",
-                icon: 'question',
-                showCancelButton: true,
-                confirmButtonColor: '#d33',
-                cancelButtonColor: '#3085d6',
-                confirmButtonText: '네, 삭제합니다',
-                cancelButtonText: '취소',
-                background: document.body.classList.contains('dark-mode') ? '#333' : '#fff',
-                color: document.body.classList.contains('dark-mode') ? '#fff' : '#333'
-            }).then((result) => {
-                if (result.isConfirmed) {
-
-                    const transaction = db.transaction(['logs'], 'readwrite');
-                    const objectStore = transaction.objectStore('logs');
-                    const request = objectStore.delete(currentLogId);
-
-                    request.onsuccess = () => {
-                        showToast('기록이 삭제되었습니다.', 'success');
-                        loadLogList();
-                        createNewLog();
-                    };
-
-                    request.onerror = () => {
-                        showToast('❌ 삭제에 실패했습니다.', 'error');
-                    };
-                }
-            });
-
-            return;
-
+            
+            if (!confirm('정말로 이 기록을 삭제하시겠습니까?')) {
+                return;
+            }
+            
+            const transaction = db.transaction(['logs'], 'readwrite');
+            const objectStore = transaction.objectStore('logs');
+            const request = objectStore.delete(currentLogId);
+            
+            request.onsuccess = () => {
+                alert('✅ 기록이 삭제되었습니다.');
+                loadLogList();
+                createNewLog();
+            };
+            
+            request.onerror = () => {
+                alert('❌ 삭제에 실패했습니다.');
+            };
         }
-
+        
         // 초기화
         initDB();
-
+        
         // 다크모드 토글
         function toggleDarkMode() {
             document.body.classList.toggle('dark-mode');
             const isDark = document.body.classList.contains('dark-mode');
             localStorage.setItem('darkMode', isDark);
-
+            
             const btn = document.querySelector('.dark-mode-toggle');
             btn.textContent = isDark ? '☀️ 라이트모드' : '🌙 다크모드';
         }
-
+        
         // 다크모드 설정 로드
         if (localStorage.getItem('darkMode') === 'true') {
             document.body.classList.add('dark-mode');
             document.querySelector('.dark-mode-toggle').textContent = '☀️ 라이트모드';
         }
-
-        async function generatePDF(darkMode = false) {
-            // PDF 생성 버튼 찾기
-            const button = event.target;
-            const originalButtonText = button.textContent;
-            button.textContent = darkMode ? '🌙 다크 PDF 생성 중...' : '📥 PDF 생성 중...';
-            button.disabled = true;
-
-            // 현재 다크모드 상태 저장
-            const wasInDarkMode = document.body.classList.contains('dark-mode');
-
-            try {
-                // 다크 PDF를 생성하려면 다크모드로 전환
-                if (darkMode && !wasInDarkMode) {
-                    document.body.classList.add('dark-mode');
-                    // DOM 업데이트를 위한 약간의 대기
-                    await new Promise(resolve => setTimeout(resolve, 100));
-                }
-                // 라이트 PDF를 생성하려면 라이트모드로 전환
-                else if (!darkMode && wasInDarkMode) {
-                    document.body.classList.remove('dark-mode');
-                    await new Promise(resolve => setTimeout(resolve, 100));
-                }
-
-                const { html, fileName } = generatePDFContent(darkMode);
-                const pdfContent = document.getElementById('pdfContent');
-                pdfContent.innerHTML = html;
-
-                // PDF 컨텐츠를 화면에 표시 (html2canvas를 위해) - min-height 추가로 여백을 배경색으로 채움
-                pdfContent.style.display = 'block';
-                pdfContent.style.position = 'absolute';
-                pdfContent.style.left = '-9999px';
-                pdfContent.style.top = '0';
-                pdfContent.style.margin = '0';
-                pdfContent.style.padding = '0';
-                pdfContent.style.width = '210mm';
-                pdfContent.style.minHeight = '297mm';  // 추가: 최소 A4 높이로 설정하여 하단 여백을 배경색으로 채움
-                pdfContent.style.backgroundColor = darkMode ? '#1e1e1e' : '#ffffff';
-
-                // 브라우저가 스타일을 렌더링할 시간을 충분히 줌 (증가시켜 안정성 높임)
-                await new Promise(resolve => setTimeout(resolve, 1000));
-
-                // html2canvas로 HTML을 이미지로 변환 (최고 품질)
-                const canvas = await html2canvas(pdfContent, {
-                    scale: 3, // 3배 해상도로 더 선명하게
-                    useCORS: true,
-                    logging: false,
-                    backgroundColor: darkMode ? '#1e1e1e' : '#ffffff',
-                    imageTimeout: 0,
-                    removeContainer: false,
-                    allowTaint: true
-                });
-
-                // jsPDF로 PDF 생성
-                const { jsPDF } = window.jspdf;
-                const pdf = new jsPDF({
-                    orientation: 'portrait',
-                    unit: 'mm',
-                    format: 'a4',
-                    compress: false // 압축 최소화로 품질 유지
-                });
-
-                const imgWidth = 210; // A4 width in mm
-                const pageHeight = 297; // A4 height in mm
-                const imgHeight = (canvas.height * imgWidth) / canvas.width;
-                let heightLeft = imgHeight;
-                let position = 0;
-
-                const imgData = canvas.toDataURL('image/jpeg', 1.0); // JPEG 최고 품질
-
-                // 페이지 배경 색상 설정 (다크모드일 때 어두운 배경 채우기)
-                const fillColor = darkMode ? [30, 30, 30] : [255, 255, 255];
-
-                // 첫 페이지: 배경을 채우고 이미지 추가
-                pdf.setFillColor(...fillColor);
-                pdf.rect(0, 0, imgWidth, pageHeight, 'F');
-                pdf.addImage(imgData, 'JPEG', 0, position, imgWidth, imgHeight, undefined, 'FAST');
-                heightLeft -= pageHeight;
-
-                // 필요한 경우 추가 페이지 생성 (각 페이지마다 배경을 채운다)
-                while (heightLeft > 0) {
-                    position -= pageHeight;  // 수정: position을 제대로 조정하여 연속 이미지 연결
-                    pdf.addPage();
-                    pdf.setFillColor(...fillColor);
-                    pdf.rect(0, 0, imgWidth, pageHeight, 'F');
-                    pdf.addImage(imgData, 'JPEG', 0, position, imgWidth, imgHeight, undefined, 'FAST');
-                    heightLeft -= pageHeight;
-                }
-
-                // PDF 다운로드
-                const suffix = darkMode ? '_dark' : '';
-                pdf.save(`${fileName}${suffix}.pdf`);
-
-                // PDF 컨텐츠 숨기기 및 클래스 제거
-                pdfContent.style.display = 'none';
-                pdfContent.style.position = '';
-                pdfContent.style.left = '';
-                pdfContent.style.top = '';
-                pdfContent.style.minHeight = '';  // 복원
-
-                showToast('PDF가 성공적으로 다운로드되었습니다!', 'success');
-            } catch (error) {
-                console.error('PDF 생성 오류:', error);
-                showToast('❌ PDF 생성 중 오류가 발생했습니다.', 'error');
-            } finally {
-                // 원래 다크모드 상태로 복원
-                if (wasInDarkMode && !document.body.classList.contains('dark-mode')) {
-                    document.body.classList.add('dark-mode');
-                } else if (!wasInDarkMode && document.body.classList.contains('dark-mode')) {
-                    document.body.classList.remove('dark-mode');
-                }
-
-                button.textContent = originalButtonText;
-                button.disabled = false;
-            }
+        
+    async function generatePDF(darkMode = false) {
+    // PDF 생성 버튼 찾기
+    const button = event.target;
+    const originalButtonText = button.textContent;
+    button.textContent = darkMode ? '🌙 다크 PDF 생성 중...' : '📥 PDF 생성 중...';
+    button.disabled = true;
+    
+    // 현재 다크모드 상태 저장
+    const wasInDarkMode = document.body.classList.contains('dark-mode');
+    
+    try {
+        // 다크 PDF를 생성하려면 다크모드로 전환
+        if (darkMode && !wasInDarkMode) {
+            document.body.classList.add('dark-mode');
+            // DOM 업데이트를 위한 약간의 대기
+            await new Promise(resolve => setTimeout(resolve, 100));
         }
+        // 라이트 PDF를 생성하려면 라이트모드로 전환
+        else if (!darkMode && wasInDarkMode) {
+            document.body.classList.remove('dark-mode');
+            await new Promise(resolve => setTimeout(resolve, 100));
+        }
+        
+        const { html, fileName } = generatePDFContent(darkMode);
+        const pdfContent = document.getElementById('pdfContent');
+        pdfContent.innerHTML = html;
+        
+        // PDF 컨텐츠를 화면에 표시 (html2canvas를 위해) - min-height 추가로 여백을 배경색으로 채움
+        pdfContent.style.display = 'block';
+        pdfContent.style.position = 'absolute';
+        pdfContent.style.left = '-9999px';
+        pdfContent.style.top = '0';
+        pdfContent.style.margin = '0';
+        pdfContent.style.padding = '0';
+        pdfContent.style.width = '210mm';
+        pdfContent.style.minHeight = '297mm';  // 추가: 최소 A4 높이로 설정하여 하단 여백을 배경색으로 채움
+        pdfContent.style.backgroundColor = darkMode ? '#1e1e1e' : '#ffffff';
+        
+        // 브라우저가 스타일을 렌더링할 시간을 충분히 줌 (증가시켜 안정성 높임)
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        
+        // html2canvas로 HTML을 이미지로 변환 (최고 품질)
+        const canvas = await html2canvas(pdfContent, {
+            scale: 3, // 3배 해상도로 더 선명하게
+            useCORS: true,
+            logging: false,
+            backgroundColor: darkMode ? '#1e1e1e' : '#ffffff',
+            imageTimeout: 0,
+            removeContainer: false,
+            allowTaint: true
+        });
+        
+        // jsPDF로 PDF 생성
+        const { jsPDF } = window.jspdf;
+        const pdf = new jsPDF({
+            orientation: 'portrait',
+            unit: 'mm',
+            format: 'a4',
+            compress: false // 압축 최소화로 품질 유지
+        });
+        
+        const imgWidth = 210; // A4 width in mm
+        const pageHeight = 297; // A4 height in mm
+        const imgHeight = (canvas.height * imgWidth) / canvas.width;
+        let heightLeft = imgHeight;
+        let position = 0;
+        
+        const imgData = canvas.toDataURL('image/jpeg', 1.0); // JPEG 최고 품질
+
+        // 페이지 배경 색상 설정 (다크모드일 때 어두운 배경 채우기)
+        const fillColor = darkMode ? [30, 30, 30] : [255, 255, 255];
+
+        // 첫 페이지: 배경을 채우고 이미지 추가
+        pdf.setFillColor(...fillColor);
+        pdf.rect(0, 0, imgWidth, pageHeight, 'F');
+        pdf.addImage(imgData, 'JPEG', 0, position, imgWidth, imgHeight, undefined, 'FAST');
+        heightLeft -= pageHeight;
+
+        // 필요한 경우 추가 페이지 생성 (각 페이지마다 배경을 채운다)
+        while (heightLeft > 0) {
+            position -= pageHeight;  // 수정: position을 제대로 조정하여 연속 이미지 연결
+            pdf.addPage();
+            pdf.setFillColor(...fillColor);
+            pdf.rect(0, 0, imgWidth, pageHeight, 'F');
+            pdf.addImage(imgData, 'JPEG', 0, position, imgWidth, imgHeight, undefined, 'FAST');
+            heightLeft -= pageHeight;
+        }
+        
+        // PDF 다운로드
+        const suffix = darkMode ? '_dark' : '';
+        pdf.save(`${fileName}${suffix}.pdf`);
+        
+        // PDF 컨텐츠 숨기기 및 클래스 제거
+        pdfContent.style.display = 'none';
+        pdfContent.style.position = '';
+        pdfContent.style.left = '';
+        pdfContent.style.top = '';
+        pdfContent.style.minHeight = '';  // 복원
+        
+        alert('✅ PDF가 성공적으로 다운로드되었습니다!');
+    } catch (error) {
+        console.error('PDF 생성 오류:', error);
+        alert('❌ PDF 생성 중 오류가 발생했습니다.');
+    } finally {
+        // 원래 다크모드 상태로 복원
+        if (wasInDarkMode && !document.body.classList.contains('dark-mode')) {
+            document.body.classList.add('dark-mode');
+        } else if (!wasInDarkMode && document.body.classList.contains('dark-mode')) {
+            document.body.classList.remove('dark-mode');
+        }
+        
+        button.textContent = originalButtonText;
+        button.disabled = false;
+    }
+}
 
         // // PDF 다운로드 생성 OLD
         // async function generatePDF(darkMode = false) {
@@ -1437,10 +1331,10 @@
         //     const originalButtonText = button.textContent;
         //     button.textContent = darkMode ? '🌙 다크 PDF 생성 중...' : '📥 PDF 생성 중...';
         //     button.disabled = true;
-
+            
         //     // 현재 다크모드 상태 저장
         //     const wasInDarkMode = document.body.classList.contains('dark-mode');
-
+            
         //     try {
         //         // 다크 PDF를 생성하려면 다크모드로 전환
         //         if (darkMode && !wasInDarkMode) {
@@ -1453,11 +1347,11 @@
         //             document.body.classList.remove('dark-mode');
         //             await new Promise(resolve => setTimeout(resolve, 100));
         //         }
-
+                
         //         const { html, fileName } = generatePDFContent(darkMode);
         //         const pdfContent = document.getElementById('pdfContent');
         //         pdfContent.innerHTML = html;
-
+                
         //         // PDF 컨텐츠를 화면에 표시 (html2canvas를 위해)
         //         pdfContent.style.display = 'block';
         //         pdfContent.style.position = 'absolute';
@@ -1467,10 +1361,10 @@
         //         pdfContent.style.padding = '0';
         //         pdfContent.style.width = '210mm';
         //         pdfContent.style.backgroundColor = darkMode ? '#1e1e1e' : '#ffffff';
-
+                
         //         // 브라우저가 스타일을 렌더링할 시간을 충분히 줌
         //         await new Promise(resolve => setTimeout(resolve, 500));
-
+                
         //         // html2canvas로 HTML을 이미지로 변환 (최고 품질)
         //         const canvas = await html2canvas(pdfContent, {
         //             scale: 3, // 3배 해상도로 더 선명하게
@@ -1481,7 +1375,7 @@
         //             removeContainer: false,
         //             allowTaint: true
         //         });
-
+                
         //         // jsPDF로 PDF 생성
         //         const { jsPDF } = window.jspdf;
         //         const pdf = new jsPDF({
@@ -1490,19 +1384,19 @@
         //             format: 'a4',
         //             compress: false // 압축 최소화로 품질 유지
         //         });
-
+                
         //         const imgWidth = 210; // A4 width in mm
         //         const pageHeight = 297; // A4 height in mm
         //         const imgHeight = (canvas.height * imgWidth) / canvas.width;
         //         let heightLeft = imgHeight;
         //         let position = 0;
-
+                
         //         const imgData = canvas.toDataURL('image/jpeg', 1.0); // JPEG 최고 품질
-
+                
         //         // 첫 페이지 추가
         //         pdf.addImage(imgData, 'JPEG', 0, position, imgWidth, imgHeight, undefined, 'FAST');
         //         heightLeft -= pageHeight;
-
+                
         //         // 필요한 경우 추가 페이지 생성
         //         while (heightLeft > 0) {
         //             position = heightLeft - imgHeight;
@@ -1510,21 +1404,21 @@
         //             pdf.addImage(imgData, 'JPEG', 0, position, imgWidth, imgHeight, undefined, 'FAST');
         //             heightLeft -= pageHeight;
         //         }
-
+                
         //         // PDF 다운로드
         //         const suffix = darkMode ? '_dark' : '';
         //         pdf.save(`${fileName}${suffix}.pdf`);
-
+                
         //         // PDF 컨텐츠 숨기기 및 클래스 제거
         //         pdfContent.style.display = 'none';
         //         pdfContent.style.position = '';
         //         pdfContent.style.left = '';
         //         pdfContent.style.top = '';
-
-        //         showToast('✅ PDF가 성공적으로 다운로드되었습니다!');
+                
+        //         alert('✅ PDF가 성공적으로 다운로드되었습니다!');
         //     } catch (error) {
         //         console.error('PDF 생성 오류:', error);
-        //         showToast('❌ PDF 생성 중 오류가 발생했습니다.');
+        //         alert('❌ PDF 생성 중 오류가 발생했습니다.');
         //     } finally {
         //         // 원래 다크모드 상태로 복원
         //         if (wasInDarkMode && !document.body.classList.contains('dark-mode')) {
@@ -1532,21 +1426,21 @@
         //         } else if (!wasInDarkMode && document.body.classList.contains('dark-mode')) {
         //             document.body.classList.remove('dark-mode');
         //         }
-
+                
         //         button.textContent = originalButtonText;
         //         button.disabled = false;
         //     }
         // }
-
+        
         // PDF 인쇄
         function printPDF() {
             const { html, fileName } = generatePDFContent(false);
             const printContent = document.getElementById('printContent');
             printContent.innerHTML = html;
-
+            
             // 파일명 힌트 제공
             document.title = fileName;
-
+            
             // 인쇄 대화상자 열기
             setTimeout(() => {
                 window.print();
@@ -1556,7 +1450,7 @@
                 }, 1000);
             }, 100);
         }
-
+        
         // PDF 콘텐츠 생성 (공통 함수)
         function generatePDFContent() {
             // 색상 테마 설정
@@ -1567,7 +1461,7 @@
             const labelColor = isDarkMode ? '#999' : '#000000';
             const borderColor = isDarkMode ? '#3a3a3a' : '#e0e0e0';
             const footerColor = isDarkMode ? '#666666' : '#666666';
-
+            
             // 현재 폼 데이터 수집
             const date = document.getElementById('workDate').value;
             const hours = document.getElementById('workHours').value;
@@ -1581,7 +1475,7 @@
             const moodNote = document.getElementById('moodNote').value;
             const tomorrow = document.getElementById('tomorrow').value;
             const notes = document.getElementById('notes').value;
-
+            
             const moodLabels = {
                 '5': '🔥 최고!',
                 '4': '😊 좋음',
@@ -1589,13 +1483,13 @@
                 '2': '😔 낮음',
                 '1': '😓 힘듦'
             };
-
+            
             const completedTasks = collectTasks('completedTasks');
             const inProgressTasks = collectTasks('inProgressTasks');
-
+            
             // PDF 파일명 생성
             const fileName = generatePDFFileName(date, goal);
-
+            
             // PDF HTML 생성 (배경색 포함)
             const pdfBgColor = isDarkMode ? '#1e1e1e' : '#ffffff';
             let html = `
@@ -1605,7 +1499,7 @@
                         <div class="date">${date} ${hours ? '| ' + hours : ''}</div>
                     </div>
             `;
-
+            
             // 오늘의 목표
             if (goal) {
                 html += `
@@ -1618,7 +1512,7 @@
                     </div>
                 `;
             }
-
+            
             // 진행률 현황
             html += `
                 <div style="margin-bottom: 25px; padding: 0 40px;">
@@ -1642,7 +1536,7 @@
                     </div>
                 </div>
             `;
-
+            
             // 완료한 작업
             if (completedTasks.length > 0) {
                 html += `
@@ -1653,7 +1547,7 @@
                         </div>
                         <ul style="list-style: none; padding: 0;">
                 `;
-
+                
                 completedTasks.forEach(task => {
                     if (task.text) {
                         html += `
@@ -1675,13 +1569,13 @@
                         `;
                     }
                 });
-
+                
                 html += `
                         </ul>
                     </div>
                 `;
             }
-
+            
             // 진행 중인 작업
             if (inProgressTasks.length > 0) {
                 html += `
@@ -1692,7 +1586,7 @@
                         </div>
                         <ul style="list-style: none; padding: 0;">
                 `;
-
+                
                 inProgressTasks.forEach(task => {
                     if (task.text) {
                         html += `
@@ -1710,13 +1604,13 @@
                         `;
                     }
                 });
-
+                
                 html += `
                         </ul>
                     </div>
                 `;
             }
-
+            
             // 기술적 성과 / 배운 점
             if (learnings) {
                 html += `
@@ -1729,7 +1623,7 @@
                     </div>
                 `;
             }
-
+            
             // 이슈 / 블로커
             if (issues) {
                 html += `
@@ -1742,7 +1636,7 @@
                     </div>
                 `;
             }
-
+            
             // 오늘의 기분
             html += `
                 <div style="margin-bottom: 25px; padding: 0 40px;">
@@ -1754,7 +1648,7 @@
                     ${moodNote ? `<div style="font-size: 15px; line-height: 1.8; color: ${textColor}; white-space: pre-wrap; background: ${boxBg}; padding: 15px; border-radius: 8px; margin-bottom: 10px;">${moodNote}</div>` : ''}
                 </div>
             `;
-
+            
             // 내일 할 일
             if (tomorrow) {
                 html += `
@@ -1767,7 +1661,7 @@
                     </div>
                 `;
             }
-
+            
             // 추가 메모
             if (notes) {
                 html += `
@@ -1780,23 +1674,23 @@
                     </div>
                 `;
             }
-
+            
             html += `
                     <div style="text-align: center; padding: 30px; color: ${footerColor}; font-size: 13px; border-top: 2px solid ${borderColor}; margin-top: 40px;">
                         생성일시: ${new Date().toLocaleString('ko-KR')}
                     </div>
                 </div>
             `;
-
+            
             return { html, fileName };
         }
-
+        
         // PDF 파일명 생성 함수
         function generatePDFFileName(date, goal) {
             // 날짜 포맷팅 (YYYY-MM-DD)
             const dateStr = date || new Date().toISOString().split('T')[0];
             const formattedDate = dateStr.replace(/-/g, '');
-
+            
             // 목표에서 간단한 키워드 추출 (최대 30자)
             let goalKeyword = '';
             if (goal) {
@@ -1806,55 +1700,17 @@
                     .replace(/[^\w\sㄱ-ㅎㅏ-ㅣ가-힣]/g, '')
                     .replace(/\s+/g, '_')
                     .trim();
-
+                
                 if (goalKeyword) {
                     goalKeyword = '_' + goalKeyword;
                 }
             }
-
+            
             // 파일명 형식: GameDev_YYYYMMDD_목표키워드.pdf
             const fileName = `GameDev_${formattedDate}${goalKeyword}`;
-
+            
             return fileName;
         }
-
-        function showToast(message, type = 'info') {
-            const container = document.getElementById('toast-container');
-            const toast = document.createElement('div');
-
-            // 다크모드 체크
-            const isDarkMode = document.body.classList.contains('dark-mode');
-
-            // 클래스 설정
-            toast.className = `toast ${type} ${isDarkMode ? 'dark-mode' : ''}`;
-
-            // 아이콘 설정
-            let icon = 'ℹ️';
-            if (type === 'success') icon = '✅';
-            if (type === 'error') icon = '❌';
-
-            toast.innerHTML = `
-        <span style="font-size: 18px;">${icon}</span>
-        <span class="toast-message">${message}</span>
-    `;
-
-            // 컨테이너에 추가
-            container.appendChild(toast);
-
-            // 3초 후 제거 애니메이션
-            setTimeout(() => {
-                toast.style.animation = 'fadeOut 0.3s ease-in forwards';
-                // 애니메이션 끝난 후 DOM에서 제거
-                toast.addEventListener('animationend', () => {
-                    toast.remove();
-                });
-            }, 3000);
-        }
-
-        // 기존 showToast 대체 예시
-        // showToast('저장 완료'); ->
-        // showToast('저장이 완료되었습니다.', 'success');
     </script>
 </body>
-
 </html>
